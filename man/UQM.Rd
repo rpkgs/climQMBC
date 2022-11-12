@@ -29,10 +29,10 @@ This function performs bias correction of modeled series based on observed data 
 Chadwick et al. (2022) [under revision]
 }
 \examples{
-UQM(obs,mod,var)
-UQM(obs,mod,var,frq='A')
-UQM(obs,mod,var,frq='M')
-UQM(obs,mod,var,frq='M',pp_threshold=0.1)
-UQM(obs,mod,var,frq='M',pp_factor=1/1000)
-UQM(obs,mod,var,frq='M',pp_threshold=0.1,pp_factor=1/1000)
+UQM(obs, mod, var)
+UQM(obs, mod, var, frq = "A")
+UQM(obs, mod, var, frq = "M")
+UQM(obs, mod, var, frq = "M", pp_threshold = 0.1)
+UQM(obs, mod, var, frq = "M", pp_factor = 1 / 1000)
+UQM(obs, mod, var, frq = "M", pp_threshold = 0.1, pp_factor = 1 / 1000)
 }

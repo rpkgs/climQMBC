@@ -42,13 +42,13 @@ This function performs bias correction of modeled series based on observed data 
 Cannon, A. J., S. R. Sobie, and T. Q. Murdock, 2015: Bias correction of GCM precipitation by quantile mapping: How well do methods preserve changes in quantiles and extremes? J. Climate, 28(17), 6938-6959, https://doi.org/10.1175/JCLI-D-14-00754.1
 }
 \examples{
-QDM(obs,mod,var)
-QDM(obs,mod,var,frq='A')
-QDM(obs,mod,var,frq='M')
-QDM(obs,mod,var,frq='M',pp_threshold=0.1)
-QDM(obs,mod,var,frq='M',pp_factor=1/1000)
-QDM(obs,mod,var,frq='M',pp_threshold=0.1,pp_factor=1/1000)
-QDM(obs,mod,var,frq='M',rel_change_th=4)
-QDM(obs,mod,var,frq='M',inv_mod_th=1/10)
-QDM(obs,mod,var,frq='M',rel_change_th=4,inv_mod_th=1/10)
+QDM(obs, mod, var)
+QDM(obs, mod, var, frq = "A")
+QDM(obs, mod, var, frq = "M")
+QDM(obs, mod, var, frq = "M", pp_threshold = 0.1)
+QDM(obs, mod, var, frq = "M", pp_factor = 1 / 1000)
+QDM(obs, mod, var, frq = "M", pp_threshold = 0.1, pp_factor = 1 / 1000)
+QDM(obs, mod, var, frq = "M", rel_change_th = 4)
+QDM(obs, mod, var, frq = "M", inv_mod_th = 1 / 10)
+QDM(obs, mod, var, frq = "M", rel_change_th = 4, inv_mod_th = 1 / 10)
 }

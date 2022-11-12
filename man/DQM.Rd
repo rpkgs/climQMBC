@@ -29,10 +29,10 @@ This function performs bias correction of modeled series based on observed data 
 Cannon, A. J., S. R. Sobie, and T. Q. Murdock, 2015: Bias correction of GCM precipitation by quantile mapping: How well do methods preserve changes in quantiles and extremes? J. Climate, 28(17), 6938-6959, https://doi.org/10.1175/JCLI-D-14-00754.1
 }
 \examples{
-DQM(obs,mod,var)
-DQM(obs,mod,var,frq='A')
-DQM(obs,mod,var,frq='M')
-DQM(obs,mod,var,frq='M',pp_threshold=0.1)
-DQM(obs,mod,var,frq='M',pp_factor=1/1000)
-DQM(obs,mod,var,frq='M',pp_threshold=0.1,pp_factor=1/1000)
+DQM(obs, mod, var)
+DQM(obs, mod, var, frq = "A")
+DQM(obs, mod, var, frq = "M")
+DQM(obs, mod, var, frq = "M", pp_threshold = 0.1)
+DQM(obs, mod, var, frq = "M", pp_factor = 1 / 1000)
+DQM(obs, mod, var, frq = "M", pp_threshold = 0.1, pp_factor = 1 / 1000)
 }

@@ -29,10 +29,10 @@ This function performs bias correction of modeled series based on observed data 
 Switanek, B. M., Troch, P., Castro, L. C., Leuprecht, A., Chang, H. I., Mukherjee, R., and Demaria, M. C. E. (2017) Scaled distribution mapping: A bias correction method that preserves raw climate model projected changes. Hydrology &amp; Earth System Sciences, 21, 2649-2666, https://doi.org/10.5194/hess-21-2649-2017.
 }
 \examples{
-SDM(obs,mod,var)
-SDM(obs,mod,var,frq='A')
-SDM(obs,mod,var,frq='M')
-SDM(obs,mod,var,frq='M',pp_threshold=0.1)
-SDM(obs,mod,var,frq='M',pp_factor=1/1000)
-SDM(obs,mod,var,frq='M',pp_threshold=0.1,pp_factor=1/1000)
+SDM(obs, mod, var)
+SDM(obs, mod, var, frq = "A")
+SDM(obs, mod, var, frq = "M")
+SDM(obs, mod, var, frq = "M", pp_threshold = 0.1)
+SDM(obs, mod, var, frq = "M", pp_factor = 1 / 1000)
+SDM(obs, mod, var, frq = "M", pp_threshold = 0.1, pp_factor = 1 / 1000)
 }

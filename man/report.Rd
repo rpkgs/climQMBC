@@ -32,5 +32,6 @@ The second report consist of three figures. Figure 1 shows the cumulative distri
 }
 \examples{
 report(obs, mod, var)
-report(obs, mod, var,fun=['QDM','UQM','SDM'],y_init = 1979,y_wind = [2035,2060,2080])
+report(obs, mod, var, fun=c('QDM','UQM','SDM'),y_init = 1979,y_wind = c(2035,2060,2080))
+
 }

@@ -4,7 +4,7 @@
 \alias{formatQM}
 \title{formatQM}
 \usage{
-formatQM(obs, mod, var, frq, pp_threshold, pp_factor)
+formatQM(obs, mod, var, frq = "M", pp_threshold = 1, pp_factor = 0.01)
 }
 \arguments{
 \item{obs}{A column vector of monthly or annual observed data (temperature or precipitation). If monthly frequency is specified, the length of this vector is 12 times the number of observed years [12 x y_obs, 1]. If annual frequency is specified, the length of this vector is equal to the number of observed years [y_obs, 1].}
