@@ -482,20 +482,28 @@ report <- function(obs,mod,var,fun,y_init,y_wind){
   # Get empirical cumulative distribution functions
   xo <- sort(obs)
   fo <- ecdf(xo)(xo)
+  
   xm <- sort(mod[1:length(obs)])
   fm <- ecdf(xm)(xm)
+  
   xm_ <- sort(mod[length(obs)+1:length(mod)])
   fm_ <- ecdf(xm_)(xm_)
+  
   xq <- sort(QM_series[1:length(obs)])
   fq <- ecdf(xq)(xq)
+  
   xq1 <- sort(QM_series[length(obs)+1:length(mod)])
   fq1 <- ecdf(xq1)(xq1)
+  
   xq2 <- sort(DQM_series[length(obs)+1:length(mod)])
   fq2 <- ecdf(xq2)(xq2)
+  
   xq3 <- sort(QDM_series[length(obs)+1:length(mod)])
   fq3 <- ecdf(xq3)(xq3)
+  
   xq4 <- sort(UQM_series[length(obs)+1:length(mod)])
   fq4 <- ecdf(xq4)(xq4)
+
   xq5 <- sort(SDM_series[length(obs)+1:length(mod)])
   fq5 <- ecdf(xq5)(xq5)
 

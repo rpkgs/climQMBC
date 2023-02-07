@@ -49,18 +49,6 @@ and 2080.
 package should be called. The outputs of each function are columns vector with
  monthly corrected data.
 
-> Written by Sebastian Aedo Quililongo (1*)
->            Cristian Chadwick         (2)
->            Fernando Gonzalez-Leiva   (3)
->            Jorge Gironas             (3)
-> 
->  (1) Centro de Cambio Global UC, Pontificia Universidad Catolica de Chile,
->      Santiago, Chile
->  (2) Faculty of Engineering and Sciences, Universidad Adolfo Ibanez, Santiago,
->      Chile
->  (3) Department of Hydraulics and Environmental Engineering, Pontificia
->      Universidad Catolica de Chile, Santiago, Chile
-> 
 > *Maintainer contact: slaedo@uc.cl
 > Revision: 0, updated Dec 2021
 
@@ -70,24 +58,6 @@ library(climQMBC2)
 library(glue)
 library(data.table)
 library(magrittr)
-
-# Load observed and model data. Remember that for temperature, var = 0, and
-# for precipitation, var = 1.
-var <- 1
-
-if (var==1){
-  agg <- sum
-  var_txt <- 'pp' 
-} else {
-  var_txt <- 'tmax' 
-  agg <- mean
-}
-
-f <- glue("data-raw/obs_{var_txt}.csv") %>% system.file(package = "climQMBC2")
-obs <- fread(f)$V1 %>% matrix()
-
-f <- glue("data-raw/mod_{var_txt}.csv") %>% system.file(package = "climQMBC2")
-mod <- fread(f)$V1 %>% matrix()
 ```
 
 ## Example 1

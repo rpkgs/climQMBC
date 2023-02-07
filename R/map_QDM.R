@@ -96,4 +96,3 @@ map_QDM <- function(obs, mod, var, frq = "M", pp_threshold = 1, pp_factor = 1e-2
   }
   return(QDM_series)
 }
-

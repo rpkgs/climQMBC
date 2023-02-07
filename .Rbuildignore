@@ -4,3 +4,4 @@
 ^doc$
 ^\.github$
 ^LICENSE\.md$
+^vignettes/backup$
