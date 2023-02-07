@@ -1,81 +1,3 @@
-#' formatQM
-#'
-#'This function formats the inputs and gets basic statistics for the different Quantile Mapping (QM, DQM, QDM, UQM and SDM) methods available in the climQMBC package. If monthly data is specified, the input series will be reshaped to a matrix of 12 rows and several columns equal to the number of years of each series. If annual data is specified, the input is reshaped to a row vector with same entries as the input series. For precipitation, physically null values (values below pp_threshold) are replaced by random positive values below pp_factor.
-#'
-#' @param obs A column vector of monthly or annual observed data (temperature or precipitation). If monthly frequency is specified, the length of this vector is 12 times the number of observed years [12 x y_obs, 1]. If annual frequency is specified, the length of this vector is equal to the number of observed years [y_obs, 1].
-#' @param mod A column vector of monthly or annual modeled data (temperature or precipitation). If monthly frequency is specified, the length of this vector is 12 times the number of observed years [12 x y_mod, 1]. If annual frequency is specified, the length of this vector is equal to the number of observed years [y_mod, 1].
-#' @param var A flag that identifies if data are temperature or precipitation. This flag tells the getDist function if it has to discard distribution functions that allow negative numbers, and if the terms in the correction equations are multiplied/divided or added/subtracted. Temperature:   var = 0; Precipitation: var = 1
-#' @param frq A string specifying if the input is annual or monthly data. If not specified, it is set monthly as default. Monthly:   frq = 'M'; Annual:    frq = 'A'
-#' @param pp_threshold A float indicating the threshold to consider physically null precipitation values.
-#' @param pp_factor A float indicating the maximum value of the random values that replace physically null precipitation values.
-#'
-#' @return y_obs:          Number of observed years.
-#' @return obs_series:     A column vector of monthly or annual observed data (temperature or precipitation). If monthly frequency is specified, the length of this vector is 12 times the number of observed years [12, y_obs]. If annual frequency is specified, the length of this vector is equal to the number of observed years [1, y_obs].
-#' @return mod_series:     A column vector of monthly or annual modeled data (temperature or precipitation). If monthly frequency is specified, the length of this vector is 12 times the number of observed years [12, y_mod]. If annual frequency is specified, the length of this vector is equal to the number of observed years [1, y_mod].
-#' @return mu_obs:         If monthly frequency is specified, a column vector of monthly mean of observed data [12,1]. If annual frequency is specified, the mean of the observed data (float).
-#' @return mu_mod:         If monthly frequency is specified, a column vector of monthly mean of modeled data of the historical period [12,1]. If annual frequency is specified, the mean of the modeled data of the historical period(float).
-#' @return sigma_obs:      If monthly frequency is specified, a column vector of monthly standard deviation of observed data [12,1]. If annual frequency is specified, the standard deviation of the observed data (float).
-#' @return sigma_mod:      If monthly frequency is specified, a column vector of monthly standard deviation of modeled data of the historical period [12,1]. If annual frequency is specified, the standard deviation of the modeled data of the historical period(float).
-#' @return skew_obs:       If monthly frequency is specified, a column vector of monthly skewness of observed data [12,1]. If annual frequency is specified, the skewness of the observed data (float).
-#' @return skew_mod:       If monthly frequency is specified, a column vector of monthly skewness of modeled data of the historical period [12,1]. If annual frequency is specified, the skewness of the modeled data of the historical period (float).
-#' @return skewy_obs:      If monthly frequency is specified, a column vector of monthly skewness of the logarithm of observed data [12,1]. If annual frequency is specified, the skewness of the logarithm of the observed data (float).
-#' @return skewy_mod:      If monthly frequency is specified, a column vector of monthly skewness of the logarithm of modeled data of the historical period [12,1]. If annual frequency is specified, the skewness of the logarithm of the modeled data of the historical period(float).
-#' @export
-#'
-#' @examples formatQM(obs,mod,var,frq,pp_threshold,pp_factor)
-formatQM <- function(obs,mod,var,frq,pp_threshold,pp_factor){
-
-  # 0) Check if annually or monthly data is specified.
-  if (frq == 'A') {
-    I <- 1
-  } else {
-    I <- 12
-  }
-
-  # 1) If variable is precipitation, replace low values with random values.
-  if (var==1){
-    bool_low_obs <- obs<pp_threshold
-    bool_low_mod <- mod<pp_threshold
-    obs[bool_low_obs] <- runif(sum(bool_low_obs))*pp_factor
-    mod[bool_low_mod] <- runif(sum(bool_low_mod))*pp_factor
-  }
-
-  # 2) Get number of years of the observed period.
-  y_obs <- length(obs)/I
-
-  # 3) If monthly data is specified, reshape the input series to a matrix of
-  #    12 rows and several columns equal to the number of years of each
-  #    series. If annually data is specified, reshape the input to a row
-  #    vector with same entries as the input series.
-  obs_series <- matrix(obs,nrow = I, ncol = length(obs)/I)
-  mod_series <- matrix(mod,nrow = I, ncol = length(mod)/I)
-
-  # 4) If monthly data is specified, get monthly mean, standard deviation,
-  #   skewness, and log-skewness for the historical period of the observed
-  #   and modeled series. If annually data is specified, get monthly mean,
-  #   standard deviation, skewness, and log-skewness for the historical
-  #   period of the observed and modeled series.
-  mu_obs <- apply(obs_series, 1, mean, na.rm = TRUE)         # Mean
-  sigma_obs <- apply(obs_series, 1, sd, na.rm = TRUE)        # Standard deviation
-  skew_obs <- apply(obs_series,1,e1071::skewness,na.rm=TRUE,type=2) # Skewness
-  Ln_obs <- log(obs_series)
-  Ln_obs[Im(Ln_obs)!=0] <- 0
-  Ln_obs[!is.finite(Ln_obs)] = log(0.01)
-  skewy_obs = apply(Ln_obs,1,e1071::skewness,na.rm=TRUE,type=2) # Log-Skewness
-
-  mod_series_h = matrix(mod_series[,1:y_obs],nrow=dim(mod_series)[1])
-  mu_mod <- apply(mod_series_h, 1, mean, na.rm = TRUE)         # Mean
-  sigma_mod <- apply(mod_series_h, 1, sd, na.rm = TRUE)        # Standard deviation
-  skew_mod <- apply(mod_series_h,1,e1071::skewness,na.rm=TRUE,type=2) # Skewness
-  Ln_mod <- log(mod_series_h)
-  Ln_mod[Im(Ln_mod)!=0] <- 0
-  Ln_mod[!is.finite(Ln_mod)] = log(0.01)
-  skewy_mod <- apply(Ln_mod,1,e1071::skewness,na.rm=TRUE,type=2) # Log-Skewness
-
-  return(list(y_obs,obs_series,mod_series,matrix(mu_obs,nrow=I),matrix(sigma_obs,nrow=I),matrix(skew_obs,nrow=I),matrix(skewy_obs,nrow=I),matrix(mu_mod,nrow=I),matrix(sigma_mod,nrow=I),matrix(skew_mod,nrow=I),matrix(skewy_mod),nrow=I))
-}
-
-
 #' Get probability distribution function for each month of the period
 #'
 #' This function assigns an independent probability distribution function to each row of the input series by comparing the empirical probability distribution function with seven distributions based on the Kolmogorov-Smirnov (KS) test. If the series consider monthly data, it will have 12 rows and each row will represent a month. For annual data the series will have only one row. Only strictly positive distributions are considered for precipitation and strictly positive distributions are discarded if the series has negative values.
@@ -95,7 +17,7 @@ formatQM <- function(obs,mod,var,frq,pp_threshold,pp_factor){
 #' @export
 #'
 #' @examples getDist(series,mu,sigma,skew,skewy,var)
-getDist <- function(series,mu,sigma,skew,skewy,var){
+getDist <- function(series, mu,sigma,skew,skewy,var){
 
   # 1) Get the number of years to compute the empirical distribution in step
   #    3) and get the number of rows of the input series.
