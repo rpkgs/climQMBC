@@ -7,27 +7,61 @@
 getCDFinv(PDF, Taot, mu, sigma, skew, skewy)
 }
 \arguments{
-\item{PDF}{A column vector with an ID for the resulting distribution from the KS test. \link{12,1} if the series consider monthly data and \link{1,1} if the series consider annual data. The ID is related to the numeration of the distribution listed in the description of this function.}
+\item{PDF}{A column vector with an ID for the resulting distribution from the
+KS test. \verb{[12,1]} if the series consider monthly data and \verb{[1,1]} if the
+series consider annual data. The ID is related to the numeration of the
+distribution listed in the description of this function.}
 
-\item{Taot}{A column vector with the non-exceedance probability for each row of the input series. \link{12,1} if the series consider monthly data and \link{1,1} if the series consider annual data.}
-
-\item{mu}{A column vector of mean values of the series. \link{12,1} if the series consider monthly data and \link{1,1} if the series consider annual data.}
-
-\item{sigma}{A column vector of standard deviation of the series. \link{12,1} if the series consider monthly data and \link{1,1} if the series consider annual data.}
-
-\item{skew}{A column vector of skewness of the series. \link{12,1} if the series consider monthly data and \link{1,1} if the series consider annual data.}
-
-\item{skewy}{A column vector of skewness of the logarithm of the series. \link{12,1} if the series consider monthly data and \link{1,1} if the series consider annual data.}
+\item{Taot}{A column vector with the non-exceedance probability for each row
+of the input series. \verb{[12,1]} if the series consider monthly data and \verb{[1,1]}
+if the series consider annual data.}
 }
 \value{
-xhat: A column vector with the values obtained when the inverse cumulative distribution function is applied. \link{12,1} if the series consider monthly data and \link{1,1} if the series consider annual data.
+\code{xhat}: A column vector with the values obtained when the inverse
+cumulative distribution function is applied. \verb{[12,1]} if the series consider
+monthly data and \verb{[1,1]} if the series consider annual data.
 }
 \description{
-This function evaluates the probability, Taot, in the respective inverse cumulative distribution function assigned by the Kolmogorov-Smirnov (KS) test in the getDist function of the climQMBC package.
+Evaluates the probability, Taot, in the respective inverse cumulative
+distribution function assigned by the Kolmogorov-Smirnov (KS) test in the
+\link{getDist}.
 }
-\details{
-The available distributions are: 1) Normal distribution; 2) Log-Normal distribution; 3) Gamma 2 parameters distribution; 4) Gamma 3 parameters distribution (Pearson 3 parameters distribution); 5) Log-Gamma 3 parameters distribution (Log-Pearson 3 parameters distribution); 6) Gumbel distribution; 7) Exponential distribution
+\section{Distributions}{
+ The available distributions are:
+\enumerate{
+\item Normal distribution;
+\item Log-Normal distribution;
+\item Gamma 2 parameters distribution;
+\item Gamma 3 parameters distribution (Pearson 3 parameters distribution);
+\item Log-Gamma 3 parameters distribution (Log-Pearson 3 parameters
+distribution);
+\item Gumbel distribution;
+\item Exponential distribution
 }
+\itemize{
+\item For precipitation, only 2), 3) and 5) are considered (1, 4, 6, and 7 are
+discarded).
+\item For series with negative values, only 1), 3), 4), 6), and 7) are considered
+(2, 3 and 5 are discarded).
+}
+}
+
 \examples{
-getCDFinv(PDF,Taot,mu,sigma,skew,skewy)
+# temperature data
+input <- climMOD
+l <- with(input, formatQM(obs, mod, var))
+print(str(l))
+
+l_obs <- l$obs
+l_mod <- l$mod
+
+DIST_mod <- with(l_mod, getDist(data, coef, var))
+
+cdf_mod <- with(l_mod, getCDF(DIST_mod, data, coef))
+
+DIST_obs <- with(l_obs, getDist(data, coef, var))
+QM_series <- getCDFinv(DIST_obs, cdf_mod, l_obs$coef)
+
+r <- list(dist = DIST_mod, cdf = cdf_mod)
+print(str(r))
 }

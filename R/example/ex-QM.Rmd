@@ -1,4 +1,7 @@
 ```{r}
+devtools::load_all(".")
+library(climQMBC2)
+
 input = climMOD
 e = list2env(input, .GlobalEnv)
 
@@ -23,16 +26,29 @@ all.equal(r, r_org)
 ## DQM
 
 ```{r}
-r = DQM(obs, mod, var) %>% c()
+r = map_DQM(obs, mod, var) %>% c()
 r_org = climQMBC::DQM(obs, mod, var, frq, pp_threshold, pp_factor) %>% c()
 all.equal(r, r_org)
-# plot(r, r_org)
 ```
 ## QQM
 
 ```{r}
-r = QDM(obs, mod, var) %>% c()
+r = map_QDM(obs, mod, var) %>% c()
 r_org = climQMBC::QDM(obs, mod, var, frq, pp_threshold, pp_factor, rel_change_th = 2, inv_mod_th = pp_threshold) %>% c()
 all.equal(r, r_org)
-# plot(r, r_org)
+```
+## UQM
+
+```{r}
+r = map_UQM(obs, mod, var) %>% c()
+r_org = climQMBC::UQM(obs, mod, var) %>% c()
+all.equal(r, r_org)
+```
+
+## SQM
+
+```{r}
+r = map_SDM(obs, mod, var) %>% c()
+r_org = climQMBC::SDM(obs, mod, var) %>% c()
+all.equal(r, r_org)
 ```

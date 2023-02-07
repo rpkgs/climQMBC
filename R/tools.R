@@ -1,3 +1,4 @@
+
 listk <- function(...) {
   cols <- as.list(substitute(list(...)))[-1]
   vars <- names(cols)
@@ -16,3 +17,10 @@ listk <- function(...) {
 skewness2 <- function(x, ...) {
   e1071::skewness(x, na.rm = TRUE, type = 2)
 }
+
+## package functions
+QM <- map_QM
+QDM <- map_QDM
+DQM <- map_DQM
+SDM <- map_SDM
+UQM <- map_UQM

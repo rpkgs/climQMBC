@@ -2,34 +2,99 @@
 % Please edit documentation in R/getDist.R
 \name{getDist}
 \alias{getDist}
-\title{Get probability distribution function for each month of the period}
+\title{Get probability distribution function}
 \usage{
 getDist(series, mu, sigma, skew, skewy, var)
 }
 \arguments{
-\item{series}{A matrix of monthly or annual data (temperature or precipitation). If the series consider monthly data, it will have 12 rows and each row will represent a month. For annual data the series will have only one row.}
+\item{series}{A matrix of monthly or annual data (temperature or
+precipitation). If the series consider monthly data, it will have 12 rows and
+each row will represent a month. For annual data the series will have only
+one row.}
 
-\item{mu}{A column vector of mean values of the series. \link{12,1} if the series consider monthly data and \link{1,1} if the series consider annual data.}
+\item{var}{A flag that identifies if data are temperature or precipitation.
+This flag tells the getDist function if it has to discard distribution
+functions that allow negative numbers.
+\itemize{
+\item Temperature: \code{var = 0};
+\item Precipitation: \code{var = 1}, which not allow negative numbers.
+}}
 
-\item{sigma}{A column vector of standard deviation of the series. \link{12,1} if the series consider monthly data and \link{1,1} if the series consider annual data.}
-
-\item{skew}{A column vector of skewness of the series. \link{12,1} if the series consider monthly data and \link{1,1} if the series consider annual data.}
-
-\item{skewy}{A column vector of skewness of the logarithm of the series. \link{12,1} if the series consider monthly data and \link{1,1} if the series consider annual data.}
-
-\item{var}{A flag that identifies if data are temperature or precipitation. This flag tells the getDist function if it has to discard distribution functions that allow negative numbers. Temperature:   var = 0; Precipitation: var = 1}
+\item{coef}{A named list, with the elements of:
+\itemize{
+\item \code{mu}: A column vector of mean values of the series. \verb{[12,1]} if the series
+consider monthly data and \verb{[1,1]} if the series consider annual data.
+\item \code{sigma}: A column vector of standard deviation of the series. \verb{[12,1]} if
+the series consider monthly data and \verb{[1,1]} if the series consider annual
+data.
+\item \code{skew}: A column vector of skewness of the series. \verb{[12,1]} if the series
+consider monthly data and \verb{[1,1]} if the series consider annual data.
+\item \code{skewy}: A column vector of skewness of the logarithm of the series.
+\verb{[12,1]} if the series consider monthly data and \verb{[1,1]} if the series
+consider annual data.
+}}
 }
 \value{
-PDF: A column vector with an ID for the resulting distribution from the KS test. \link{12,1} if the series consider monthly data and \link{1,1} if the series consider annual data. The ID is related to the numeration of the distribution listed in the description of this function. This ID is used in the getCDF and getCDFinv functions of the climQMBC package.
+\code{PDF}: A column vector with an ID for the resulting distribution from
+the KS test. \verb{[12,1]} if the series consider monthly data and \verb{[1,1]} if the
+series consider annual data.
+
+The \code{ID} is related to the numeration of the distribution listed in the
+description of this function. This \code{ID} is used in the \link{getCDF} and
+\link{getCDFinv}
 }
 \description{
-This function assigns an independent probability distribution function to each row of the input series by comparing the empirical probability distribution function with seven distributions based on the Kolmogorov-Smirnov (KS) test. If the series consider monthly data, it will have 12 rows and each row will represent a month. For annual data the series will have only one row. Only strictly positive distributions are considered for precipitation and strictly positive distributions are discarded if the series has negative values.
+Get probability distribution function for each month of the period.
+\itemize{
+\item For monthly data, it will have 12 rows and each row will represent a month.
+\item For annual data the series will have only one row.
 }
-\details{
-The available distributions are: 1) Normal distribution; 2) Log-Normal distribution; 3) Gamma 2 parameters distribution; 4) Gamma 3 parameters distribution (Pearson 3 parameters distribution); 5) Log-Gamma 3 parameters distribution (Log-Pearson 3 parameters distribution); 6) Gumbel distribution; 7) Exponential distribution
 
-For precipitation, only 2), 3) and 5) are considered (1, 4, 6, and 7 are discarded). For series with negative values, only 1), 3), 4), 6), and 7) are considered (2, 3 and 5 are discarded).
+This function assigns an independent probability distribution function to
+each row of the input series by comparing the empirical probability
+distribution function with seven distributions based on the
+Kolmogorov-Smirnov (KS) test.
+
+Only strictly positive distributions are considered for precipitation and
+strictly positive distributions are discarded if the series has negative
+values.
 }
+\section{Distributions}{
+ The available distributions are:
+\enumerate{
+\item Normal distribution;
+\item Log-Normal distribution;
+\item Gamma 2 parameters distribution;
+\item Gamma 3 parameters distribution (Pearson 3 parameters distribution);
+\item Log-Gamma 3 parameters distribution (Log-Pearson 3 parameters
+distribution);
+\item Gumbel distribution;
+\item Exponential distribution
+}
+\itemize{
+\item For precipitation, only 2), 3) and 5) are considered (1, 4, 6, and 7 are
+discarded).
+\item For series with negative values, only 1), 3), 4), 6), and 7) are considered
+(2, 3 and 5 are discarded).
+}
+}
+
 \examples{
-getDist(series,mu,sigma,skew,skewy,var)
+# temperature data
+input <- climMOD
+l <- with(input, formatQM(obs, mod, var))
+print(str(l))
+
+l_obs <- l$obs
+l_mod <- l$mod
+
+DIST_mod <- with(l_mod, getDist(data, coef, var))
+
+cdf_mod <- with(l_mod, getCDF(DIST_mod, data, coef))
+
+DIST_obs <- with(l_obs, getDist(data, coef, var))
+QM_series <- getCDFinv(DIST_obs, cdf_mod, l_obs$coef)
+
+r <- list(dist = DIST_mod, cdf = cdf_mod)
+print(str(r))
 }

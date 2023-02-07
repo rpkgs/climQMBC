@@ -1,0 +1,56 @@
+---
+title: "DQM"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{DQM}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(climQMBC2)
+```
+
+# 方法说明
+
+## Quantile mapping (QM)
+
+$$
+\hat{x}_{m, p}(t)=F_{o, h}^{-1}\left\{F_{m, h}\left[x_{m, p}(t)\right]\right\},
+$$
+
+## Detrended quantile mapping (DQM)
+
+$$
+\hat{x}_{m, p}(t)=F_{o, h}^{-1}\left\{F_{m, h}\left[\frac{\bar{x}_{m, h} x_{m, p}(t)}{\bar{x}_{m, p}(t)}\right]\right\} \frac{\bar{x}_{m, p}(t)}{\bar{x}_{m, h}}
+$$
+
+> 1. 矫正SSP的结果；
+> 2. 矫正historical：`DQM`有一个滑动矫正均值的操作，其他情景不能简单的进行拼接；
+> 3. 只矫正了均值，其他分位数（如极小值、极大值）并未处理。
+
+## Quantile delta mapping (QDM)
+
+$\tau$是累计概率；$\Delta$是增加了多少倍；QDM与QM非常相似。
+$$
+\tau_{m, p}(t)=F_{m, p}^{(t)}\left[x_{m, p}(t)\right], \quad \tau_{m, p}(t) \in\{0,1\}
+$$
+
+$$
+\Delta_m(t)=\frac{F_{m, p}^{(t)-1}\left[\tau_{m, p}(t)\right]}{F_{m, h}^{-1}\left[\tau_{m, p}(t)\right]}=\frac{x_{m, p}(t)}{F_{m, h}^{-1}\left[\tau_{m, p}(t)\right]}
+$$
+
+$$
+\hat{x}_{o: m, l: p}(t)=F_{o, h}^{-1}\left[\tau_{m, p}(t)\right],
+$$
+
+$$
+\hat{x}_{m, p}(t)=\hat{x}_{o m, h: p}(t) \Delta_m(t)
+$$

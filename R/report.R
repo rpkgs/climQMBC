@@ -1,23 +1,65 @@
 #' climQMBC example report
 #'
-#' This function generates two report of the performance of the different methods (QM, DQM, QDM, UQM and SDM) available in the climQMBC package. These reports are based on the mean and standard deviation of the series in the historical and future projected periods.
+#' This function generates two report of the performance of the different
+#' methods (QM, DQM, QDM, UQM and SDM) available in the climQMBC package. These
+#' reports are based on the mean and standard deviation of the series in the
+#' historical and future projected periods.
 #'
-#' The first report is a summary table with the overall performance of the QM method in the historical period and of the different methods in future projected periods. The methods performance is addressed by comparing its variations in the mean and standard deviation with the ones of the modeled data.
+#' - `a summary table`: with the overall performance of the QM method in the
+#' historical period and of the different methods in future projected periods.
+#' The methods performance is addressed by comparing its variations in the mean
+#' and standard deviation with the ones of the modeled data.
 #'
-#' The second report consist of three figures. Figure 1 shows the cumulative distribution of the observed, modeled, and corrected series in the historical and future period. This figure also shows the complete time series. Figure 2 and 3 shows the monthly mean and standard deviation, respectively, of each series in the historical and future projected periods. In these two figures, in the future projected periods, the observed series is replaced by an objective series which is computed as the observed series (monthly mean or standard deviation), scaled by the variation between the projected and the historical period of the modeled series. Each projected period is centered in a moving window whose length is equal to the length of the historical period.
+#' - `three figures`: 
+#' 
+#'    + Figure 1 shows the cumulative distribution of the observed, modeled, and
+#' corrected series in the historical and future period. This figure also shows
+#' the complete time series. 
+#' 
+#'    + Figure 2 and 3 shows the monthly mean and standard deviation,
+#' respectively, of each series in the historical and future projected periods.
+#' In these two figures, in the future projected periods, the observed series is
+#' replaced by an objective series which is computed as the observed series
+#' (monthly mean or standard deviation), scaled by the variation between the
+#' projected and the historical period of the modeled series. Each projected
+#' period is centered in a moving window whose length is equal to the length of
+#' the historical period.
 #'
-#' @param obs A column vector of monthly or annual observed data (temperature or precipitation). If monthly frequency is specified, the length of this vector is 12 times the number of observed years [12 x y_obs, 1]. If annual frequency is specified, the length of this vector is equal to the number of observed years [y_obs, 1].
-#' @param mod A column vector of monthly or annual modeled data (temperature or precipitation). If monthly frequency is specified, the length of this vector is 12 times the number of observed years [12 x y_mod, 1]. If annual frequency is specified, the length of this vector is equal to the number of observed years [y_mod, 1].
-#' @param var A flag that identifies if data are temperature or precipitation. This flag tells the getDist function if it has to discard distribution functions that allow negative numbers, and if the terms in the correction equations are multiplied/divided or added/subtracted. Temperature:   var = 0; Precipitation: var = 1
-#' @param fun (Optional) A list of strings with the desired bias correction methods to be reported. If this input is not recieved by the function, all bias correction methods available in the climQMBC package will be reported. The methods supported are: a) 'QM' : Quantile Mapping; b) 'DQM': Detrended Quantile Mapping; c) 'QDM': Quantile Delta Mapping; d) 'UQM': Unbiased Quantile Mapping; Default: fun = ['QM','DQM','QDM','UQM','SDM']
-#' @param y_init (Optional) First year of the observed and modeled series (integer). Default: y_init = 0
-#' @param y_wind (Optional) A list of integers with the year of the center of the projected periods to be reported. Default: y_wind = [int(y_obs+y_obs/2), int(y_mod-y_obs/2)] This value sets a first projected period just after the end of historical period, and a second projected period just before the end of the modeled series.
+#' @inheritParams formatQM
+#' 
+#' @param fun (Optional) A list of strings with the desired bias correction
+#' methods to be reported. If this input is not recieved by the function, all
+#' available bias correction methods will be reported.
+#' 
+#' The methods supported are: 
+#' 
+#' - a) 'QM' : Quantile Mapping; 
+#' - b) 'DQM': Detrended Quantile Mapping; 
+#' - c) 'QDM': Quantile Delta Mapping; 
+#' - d) 'UQM': Unbiased Quantile Mapping; 
+#' - e) `SDM`: Scaled Distribution Mapping
+#' 
+#' Default: fun = `['QM','DQM','QDM','UQM','SDM']`
+#' 
+#' @param y_init (Optional) First year of the observed and modeled series
+#' (integer). Default: y_init = 0
+#' 
+#' @param y_wind (Optional) A list of integers with the year of the center of
+#' the projected periods to be reported. Default: y_wind = `[int(y_obs+y_obs/2),
+#' int(y_mod-y_obs/2)]` This value sets a first projected period just after the
+#' end of historical period, and a second projected period just before the end
+#' of the modeled series.
 #'
-#' @return A list with the five methods implemented in the climQMBC ppackage: QM, DQM, QDM, UQM, and SDM.
+#' @return A list with the five methods implemented in the climQMBC ppackage:
+#' QM, DQM, QDM, UQM, and SDM.
+#'
+#' @examples 
+#' report(obs, mod, var) 
+#' report(obs, mod, var, fun=c('QDM','UQM','SDM'),y_init = 1979,y_wind = c(2035,2060,2080))
+#' 
+#' @importFrom pracma disp num2str
+#' 
 #' @export
-#'
-#' @examples report(obs, mod, var)
-#' @examples report(obs, mod, var,fun=['QDM','UQM','SDM'],y_init = 1979,y_wind = [2035,2060,2080])
 report <- function(obs,mod,var,fun,y_init,y_wind){
 
   # 0) Get the number of observed and modeled years
@@ -42,8 +84,8 @@ report <- function(obs,mod,var,fun,y_init,y_wind){
     rep_head <- c('Variation              Hist')
     w_label <- c()
     for (w in 1:length(y_wind)){
-      rep_head <- paste(rep_head,'       ',pracma::num2str(y_wind[w],0))
-      w_label = c(w_label,pracma::num2str(y_wind[w],0))
+      rep_head <- paste(rep_head,'       ',num2str(y_wind[w],0))
+      w_label = c(w_label,num2str(y_wind[w],0))
     }
   }
 
@@ -313,118 +355,118 @@ report <- function(obs,mod,var,fun,y_init,y_wind){
   # 6) Display report
   # a) Report description
 
- pracma::disp('Description of this report:')
- pracma::disp(' ')
- pracma::disp('Description of the table')
- pracma::disp('The first line shows the difference (relative or absolute, according')
- pracma::disp('to the variable analyzed) between the QM method and the observed data')
- pracma::disp('in the historical period. For precipitation, a value of 1 means that')
- pracma::disp('the mean precipitation of the observed data and QM series are the same')
- pracma::disp('for the historical period. For temperature, this is achieved with a')
- pracma::disp('value of 0. The second line shows the headers of the periods reported.')
- pracma::disp('Remember that the moving window is centered in the period and its')
- pracma::disp('length is equal to the length of the historical period. The first ')
- pracma::disp('column (Hist.) shows the difference between the future and the')
- pracma::disp('historical period. The next columns show the difference between the')
- pracma::disp('corresponding period and the historical period. The third and the')
- pracma::disp('following lines show the difference in each period for the')
- pracma::disp('corresponding series. As a general rule, it is desirable that the')
- pracma::disp('difference between the future periods and the historical period of the')
- pracma::disp('bias corrected series match the differences of the modeled series.')
- pracma::disp(' ')
- pracma::disp('Description of the figures')
- pracma::disp('Figure 1: (left) shows the cumulative distribution functions of each')
- pracma::disp('series split between historical and future period. (right) shows the')
- pracma::disp('observed, modeled, and corrected series.')
- pracma::disp('Figure 2: shows the monthly mean of the historical and future period.')
- pracma::disp('Additionally, monthly mean of the projected periods is displayed.')
- pracma::disp('Figure 3: shows the monthly standard deviation of the historical and')
- pracma::disp('future period. Additionally, monthly mean of the projected periods is')
- pracma::disp('displayed.')
- pracma::disp('* In Fig. 2 and 3, the obj (red) line represents objective values.')
- pracma::disp('This objective series is computed as the observed series (monthly mean')
- pracma::disp('or standard deviation), scaled by the variation between the projected')
- pracma::disp('and the historical period of the modeled series. Each projected period')
- pracma::disp('is centered in  a moving window whose length is equal to the length of')
- pracma::disp('the historical period.')
- pracma::disp(' ')
+ disp('Description of this report:')
+ disp(' ')
+ disp('Description of the table')
+ disp('The first line shows the difference (relative or absolute, according')
+ disp('to the variable analyzed) between the QM method and the observed data')
+ disp('in the historical period. For precipitation, a value of 1 means that')
+ disp('the mean precipitation of the observed data and QM series are the same')
+ disp('for the historical period. For temperature, this is achieved with a')
+ disp('value of 0. The second line shows the headers of the periods reported.')
+ disp('Remember that the moving window is centered in the period and its')
+ disp('length is equal to the length of the historical period. The first ')
+ disp('column (Hist.) shows the difference between the future and the')
+ disp('historical period. The next columns show the difference between the')
+ disp('corresponding period and the historical period. The third and the')
+ disp('following lines show the difference in each period for the')
+ disp('corresponding series. As a general rule, it is desirable that the')
+ disp('difference between the future periods and the historical period of the')
+ disp('bias corrected series match the differences of the modeled series.')
+ disp(' ')
+ disp('Description of the figures')
+ disp('Figure 1: (left) shows the cumulative distribution functions of each')
+ disp('series split between historical and future period. (right) shows the')
+ disp('observed, modeled, and corrected series.')
+ disp('Figure 2: shows the monthly mean of the historical and future period.')
+ disp('Additionally, monthly mean of the projected periods is displayed.')
+ disp('Figure 3: shows the monthly standard deviation of the historical and')
+ disp('future period. Additionally, monthly mean of the projected periods is')
+ disp('displayed.')
+ disp('* In Fig. 2 and 3, the obj (red) line represents objective values.')
+ disp('This objective series is computed as the observed series (monthly mean')
+ disp('or standard deviation), scaled by the variation between the projected')
+ disp('and the historical period of the modeled series. Each projected period')
+ disp('is centered in  a moving window whose length is equal to the length of')
+ disp('the historical period.')
+ disp(' ')
 
   # Format each line of the table report
   n = 3 # Number of decimals to which round the values
   sp = c('-',' ',' ') # A small trick to prevent negative values to use more
                      # space than positive values
-  rep_mu_M <- paste('Modeled          :', ' ', sp[sign(dm_mod)+2], pracma::num2str(abs(round(dm_mod,n))))
-  rep_mu_QM <- paste('QM               :', ' ', sp[sign(dm_QM)+2], pracma::num2str(abs(round(dm_QM,n))))
-  rep_mu_DQM <- paste('DQM              :', ' ', sp[sign(dm_DQM)+2], pracma::num2str(abs(round(dm_DQM,n))))
-  rep_mu_QDM <- paste('QDM              :', ' ', sp[sign(dm_QDM)+2], pracma::num2str(abs(round(dm_QDM,n))))
-  rep_mu_UQM <- paste('UQM              :', ' ', sp[sign(dm_UQM)+2], pracma::num2str(abs(round(dm_UQM,n))))
-  rep_mu_SDM <- paste('SDM              :', ' ', sp[sign(dm_SDM)+2], pracma::num2str(abs(round(dm_SDM,n))))
+  rep_mu_M <- paste('Modeled          :', ' ', sp[sign(dm_mod)+2], num2str(abs(round(dm_mod,n))))
+  rep_mu_QM <- paste('QM               :', ' ', sp[sign(dm_QM)+2], num2str(abs(round(dm_QM,n))))
+  rep_mu_DQM <- paste('DQM              :', ' ', sp[sign(dm_DQM)+2], num2str(abs(round(dm_DQM,n))))
+  rep_mu_QDM <- paste('QDM              :', ' ', sp[sign(dm_QDM)+2], num2str(abs(round(dm_QDM,n))))
+  rep_mu_UQM <- paste('UQM              :', ' ', sp[sign(dm_UQM)+2], num2str(abs(round(dm_UQM,n))))
+  rep_mu_SDM <- paste('SDM              :', ' ', sp[sign(dm_SDM)+2], num2str(abs(round(dm_SDM,n))))
 
-  rep_s_M <- paste('Modeled          :', ' ', sp[sign(ds_mod)+2], pracma::num2str(abs(round(ds_mod,n))))
-  rep_s_QM <- paste('QM               :', ' ', sp[sign(ds_QM)+2], pracma::num2str(abs(round(ds_QM,n))))
-  rep_s_DQM <- paste('DQM              :', ' ', sp[sign(ds_DQM)+2], pracma::num2str(abs(round(ds_DQM,n))))
-  rep_s_QDM <- paste('QDM              :', ' ', sp[sign(ds_QDM)+2], pracma::num2str(abs(round(ds_QDM,n))))
-  rep_s_UQM <- paste('UQM              :', ' ', sp[sign(ds_UQM)+2], pracma::num2str(abs(round(ds_UQM,n))))
-  rep_s_SDM <- paste('SDM              :', ' ', sp[sign(ds_SDM)+2], pracma::num2str(abs(round(ds_SDM,n))))
+  rep_s_M <- paste('Modeled          :', ' ', sp[sign(ds_mod)+2], num2str(abs(round(ds_mod,n))))
+  rep_s_QM <- paste('QM               :', ' ', sp[sign(ds_QM)+2], num2str(abs(round(ds_QM,n))))
+  rep_s_DQM <- paste('DQM              :', ' ', sp[sign(ds_DQM)+2], num2str(abs(round(ds_DQM,n))))
+  rep_s_QDM <- paste('QDM              :', ' ', sp[sign(ds_QDM)+2], num2str(abs(round(ds_QDM,n))))
+  rep_s_UQM <- paste('UQM              :', ' ', sp[sign(ds_UQM)+2], num2str(abs(round(ds_UQM,n))))
+  rep_s_SDM <- paste('SDM              :', ' ', sp[sign(ds_SDM)+2], num2str(abs(round(ds_SDM,n))))
 
   for (w in 1:length(y_wind)){
-    rep_mu_M <- paste(rep_mu_M, '  ; ', sp[sign(dm_mod_w[w])+2], pracma::num2str(abs(round(dm_mod_w[w],n))))
-    rep_mu_QM <- paste(rep_mu_QM, '  ; ', sp[sign(dm_QM_w[w])+2], pracma::num2str(abs(round(dm_QM_w[w],n))))
-    rep_mu_DQM <- paste(rep_mu_DQM, '  ; ', sp[sign(dm_DQM_w[w])+2], pracma::num2str(abs(round(dm_DQM_w[w],n))))
-    rep_mu_QDM <- paste(rep_mu_QDM, '  ; ', sp[sign(dm_QDM_w[w])+2], pracma::num2str(abs(round(dm_QDM_w[w],n))))
-    rep_mu_UQM <- paste(rep_mu_UQM, '  ; ', sp[sign(dm_UQM_w[w])+2], pracma::num2str(abs(round(dm_UQM_w[w],n))))
-    rep_mu_SDM <- paste(rep_mu_SDM, '  ; ', sp[sign(dm_SDM_w[w])+2], pracma::num2str(abs(round(dm_SDM_w[w],n))))
+    rep_mu_M <- paste(rep_mu_M, '  ; ', sp[sign(dm_mod_w[w])+2], num2str(abs(round(dm_mod_w[w],n))))
+    rep_mu_QM <- paste(rep_mu_QM, '  ; ', sp[sign(dm_QM_w[w])+2], num2str(abs(round(dm_QM_w[w],n))))
+    rep_mu_DQM <- paste(rep_mu_DQM, '  ; ', sp[sign(dm_DQM_w[w])+2], num2str(abs(round(dm_DQM_w[w],n))))
+    rep_mu_QDM <- paste(rep_mu_QDM, '  ; ', sp[sign(dm_QDM_w[w])+2], num2str(abs(round(dm_QDM_w[w],n))))
+    rep_mu_UQM <- paste(rep_mu_UQM, '  ; ', sp[sign(dm_UQM_w[w])+2], num2str(abs(round(dm_UQM_w[w],n))))
+    rep_mu_SDM <- paste(rep_mu_SDM, '  ; ', sp[sign(dm_SDM_w[w])+2], num2str(abs(round(dm_SDM_w[w],n))))
 
-    rep_s_M <- paste(rep_s_M, '  ; ', sp[sign(ds_mod_w[w])+2], pracma::num2str(abs(round(ds_mod_w[w],n))))
-    rep_s_QM <- paste(rep_s_QM, '  ; ', sp[sign(ds_QM_w[w])+2], pracma::num2str(abs(round(ds_QM_w[w],n))))
-    rep_s_DQM <- paste(rep_s_DQM, '  ; ', sp[sign(ds_DQM_w[w])+2], pracma::num2str(abs(round(ds_DQM_w[w],n))))
-    rep_s_QDM <- paste(rep_s_QDM, '  ; ', sp[sign(ds_QDM_w[w])+2], pracma::num2str(abs(round(ds_QDM_w[w],n))))
-    rep_s_UQM <- paste(rep_s_UQM, '  ; ', sp[sign(ds_UQM_w[w])+2], pracma::num2str(abs(round(ds_UQM_w[w],n))))
-    rep_s_SDM <- paste(rep_s_SDM, '  ; ', sp[sign(ds_SDM_w[w])+2], pracma::num2str(abs(round(ds_SDM_w[w],n))))
+    rep_s_M <- paste(rep_s_M, '  ; ', sp[sign(ds_mod_w[w])+2], num2str(abs(round(ds_mod_w[w],n))))
+    rep_s_QM <- paste(rep_s_QM, '  ; ', sp[sign(ds_QM_w[w])+2], num2str(abs(round(ds_QM_w[w],n))))
+    rep_s_DQM <- paste(rep_s_DQM, '  ; ', sp[sign(ds_DQM_w[w])+2], num2str(abs(round(ds_DQM_w[w],n))))
+    rep_s_QDM <- paste(rep_s_QDM, '  ; ', sp[sign(ds_QDM_w[w])+2], num2str(abs(round(ds_QDM_w[w],n))))
+    rep_s_UQM <- paste(rep_s_UQM, '  ; ', sp[sign(ds_UQM_w[w])+2], num2str(abs(round(ds_UQM_w[w],n))))
+    rep_s_SDM <- paste(rep_s_SDM, '  ; ', sp[sign(ds_SDM_w[w])+2], num2str(abs(round(ds_SDM_w[w],n))))
   }
 
   # b) Table
- pracma::disp('Mean')
- pracma::disp(paste('QM performance in historical period  :', ' ', sp[sign(dm_obs)+2], pracma::num2str(abs(round(dm_obs,n)))))
- pracma::disp(rep_head)
- pracma::disp(rep_mu_M)
+ disp('Mean')
+ disp(paste('QM performance in historical period  :', ' ', sp[sign(dm_obs)+2], num2str(abs(round(dm_obs,n)))))
+ disp(rep_head)
+ disp(rep_mu_M)
   if ('QM' %in% fun){
-   pracma::disp(rep_mu_QM)
+   disp(rep_mu_QM)
   }
   if ('DQM' %in% fun){
-   pracma::disp(rep_mu_DQM)
+   disp(rep_mu_DQM)
   }
   if ('QDM' %in% fun){
-   pracma::disp(rep_mu_QDM)
+   disp(rep_mu_QDM)
   }
   if ('UQM' %in% fun){
-   pracma::disp(rep_mu_UQM)
+   disp(rep_mu_UQM)
   }
   if ('SDM' %in% fun){
-   pracma::disp(rep_mu_SDM)
+   disp(rep_mu_SDM)
   }
- pracma::disp(' ')
+ disp(' ')
 
- pracma::disp('Standard deviation')
- pracma::disp(paste('QM performance in historical period  :', ' ', sp[sign(ds_obs)+2], pracma::num2str(abs(round(ds_obs,n)))))
- pracma::disp(rep_head)
- pracma::disp(rep_s_M)
+ disp('Standard deviation')
+ disp(paste('QM performance in historical period  :', ' ', sp[sign(ds_obs)+2], num2str(abs(round(ds_obs,n)))))
+ disp(rep_head)
+ disp(rep_s_M)
   if ('QM' %in% fun){
-   pracma::disp(rep_s_QM)
+   disp(rep_s_QM)
   }
   if ('DQM' %in% fun){
-   pracma::disp(rep_s_DQM)
+   disp(rep_s_DQM)
   }
   if ('QDM' %in% fun){
-   pracma::disp(rep_s_QDM)
+   disp(rep_s_QDM)
   }
   if ('UQM' %in% fun){
-   pracma::disp(rep_s_UQM)
+   disp(rep_s_UQM)
   }
   if ('SDM' %in% fun){
-   pracma::disp(rep_s_SDM)
+   disp(rep_s_SDM)
   }
- pracma::disp(' ')
+ disp(' ')
 
   # c) Figures
   series_mn <- min(c(obs,mod,QM_series,DQM_series,QDM_series,UQM_series,SDM_series))
@@ -460,8 +502,10 @@ report <- function(obs,mod,var,fun,y_init,y_wind){
   lgnd <- c('Obs_h','Mod_h','Mod_f','QM_h')
   clr <- c('red','blue','blue','black')
   mstyl <- c(1,1,2,1)
+
+
   # Plot empirical cumulative distribution function
-  dev.new()
+  # dev.new()
   par(mfrow=c(1,2))
   plot(xo,fo,col='red',type='l',xlab=c('Temperature (C)','Precipitation (mm)')[var+1],ylab='Probability',main='Empirical cumulative distribution function',ylim=c(0,1),xlim=c(series_mn,series_mx))
   grid()
@@ -548,12 +592,16 @@ report <- function(obs,mod,var,fun,y_init,y_wind){
   lgnd <- c(lgnd,'Obs.')
   clr <- c(clr,'red')
   legend('topright',legend=lgnd,lty=1,col=clr,cex=0.75,bg='white')
-
+  
 
   # Figure 2: Monthly means
   # Historical period
-  dev.new()
-  par(mfrow=c(1,length(y_wind)+2))
+  # dev.new()
+  n = length(y_wind) + 2
+  nrow = 2
+  ncol = ceiling(n / nrow)
+  par(mfrow = c(nrow, ncol))
+
   # Plot series
   plot(mu_mod_Mh,col='blue',type='l',xlab='Month',ylab='',xlim=c(1,12),ylim=c(mu_mn,mu_mx))
   title(main='Monthly mean of the historical period')
@@ -661,8 +709,8 @@ report <- function(obs,mod,var,fun,y_init,y_wind){
 
   # Figure 3: Monthly standard deviation
   # Historical period
-  dev.new()
-  par(mfrow=c(1,length(y_wind)+2))
+  # dev.new()
+  par(mfrow=c(nrow, ncol))
   # Plot series
   plot(s_mod_Mh,col='blue',type='l',xlab='Month',ylab='',xlim=c(1,12),ylim=c(s_mn,s_mx))
   title(main='Monthly std. dev. of the historical period')
@@ -766,7 +814,6 @@ report <- function(obs,mod,var,fun,y_init,y_wind){
     clr <- c(clr,'red')
     legend('topright',legend=lgnd,lty=1,col=clr,bg='white')
   }
-
 
   return(list(QM_series,DQM_series,QDM_series,UQM_series,SDM_series))
 }
