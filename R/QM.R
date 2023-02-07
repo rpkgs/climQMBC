@@ -28,8 +28,6 @@
 #'
 #' @export
 QM <- function(obs, mod, var, frq = "M", pp_threshold = 1, pp_factor = 1e-2) {
-  # 1) Format inputs and get statistics of the observed and modeled series of
-  #    the historical period (formatQM).
   l <- formatQM(obs, mod, var, frq, pp_threshold, pp_factor)
 
   ny_obs <- l$obs$nyear
@@ -87,9 +85,6 @@ QM <- function(obs, mod, var, frq = "M", pp_threshold = 1, pp_factor = 1e-2) {
 #' 
 #' @export
 DQM <- function(obs, mod, var, frq = "M", pp_threshold = 1, pp_factor = 1e-2) {
-
-  # 1) Format inputs and get statistics of the observed and modeled series of
-  #    the historical period (formatQM).
   l <- formatQM(obs, mod, var, frq, pp_threshold, pp_factor)
 
   ny_obs <- l$obs$nyear
@@ -108,53 +103,54 @@ DQM <- function(obs, mod, var, frq = "M", pp_threshold = 1, pp_factor = 1e-2) {
   skew_mod   <- l$mod$coef$skew
   skewny_mod <- l$mod$coef$skewy
 
-  # 2) Assign a probability distribution function to each month for the
-  #    observed and modeled data in the historical period. If annual
-  #    frequency is specified, this is applied to the complete historical
-  #    period (getDist).
+  ## 2) Assign a probability distribution function to each month for the observed
+  #    and modeled data in the historical period. If annual frequency is
+  #    specified, this is applied to the complete historical period (getDist).
   PDF_obs <- getDist(obs_series, mu_obs, std_obs, skew_obs, skewny_obs, var)
   PDF_mod <- getDist(mod_series[, 1:ny_obs, drop=FALSE], mu_mod, std_mod, skew_mod, skewny_mod, var)
 
-  # 3) Extract the long-term trend from the modeled data:
-  #    a) Get the monthly mean of the historical period. If annually
-  #       frequency is specified, this is applied to the complete period).
-  xbarmh <- matrix(apply(mod_series[, 1:ny_obs, drop = FALSE], 1, mean, na.rm = TRUE))
+  ## 3) Extract the long-term trend from the modeled data: 
 
-  #    b) Get the monthly mean of each projected period. If annually
-  #       frequency is specified, this is applied to the complete period).
+  # a) Get the monthly mean of the historical period. If annually frequency is
+  # specified, this is applied to the complete period).
+  xbarmh <- apply(mod_series[, 1:ny_obs, drop = FALSE], 1, mean, na.rm = TRUE)
+
+  # b) Get the monthly mean of each projected period. If annually frequency is
+  # specified, this is applied to the complete period).
   xbarmp <- matrix(0, nfrq, (ny_mod - ny_obs))
 
   for (j in 1:(ny_mod - ny_obs)) {
-    xbarmp[, j] <- apply(matrix(mod_series[, (j + 1):(ny_obs + j)], nrow = nfrq), 1, mean)
+    xbarmp[, j] <- apply(mod_series[, (j + 1):(ny_obs + j), drop = FALSE], 1, mean)
   }
 
-  # 4)Compute the linear scaled values (value in square brackets in equation
-  #                                     2 of Cannon et al. (2015)).
-  LS <- matrix(0, dim(xbarmp)[1], dim(xbarmp)[2])
-  if (var == 1) { # Precipitation
+  # 4)Compute the linear scaled values (value in square brackets in equation 2
+  # of Cannon et al. (2015)).
+  LS <- matrix(0, nfrq, (ny_mod - ny_obs))
+  if (var == 1) { 
+    # Precipitation
     for (m in 1:nfrq) {
       LS[m, ] <- (mod_series[m, (ny_obs + 1):ny_mod] * xbarmh[m]) / xbarmp[m, ]
     }
-  } else { # Temperature
+  } else { 
+    # Temperature
     for (m in 1:nfrq) {
       LS[m, ] <- (mod_series[m, (ny_obs + 1):ny_mod] + xbarmh[m]) - xbarmp[m, ]
     }
   }
 
-  # 5) Apply the cumulative distribution function of the modeled data,
-  #    evaluated with the statistics of the modeled period, to the future
-  #    modeled data (getCDF). Equation 2 of
-  #    Cannon et al. (2015).
+  # 5) Apply the cumulative distribution function of the modeled data, evaluated
+  #    with the statistics of the modeled period, to the future modeled data
+  #    (getCDF). Equation 2 of Cannon et al. (2015).
   Taot <- getCDF(PDF_mod, LS, mu_mod, std_mod, skew_mod, skewny_mod)
 
-  # 6) Apply the inverse cumulative distribution function of the observed
-  #    data, evaluated with the statistics of the observed data in the
-  #    historical period, to the probabilities obtained from 5) (getCDFinv
-  #   ). Equation 2 of Cannon et al. (2015).
+  # 6) Apply the inverse cumulative distribution function of the observed data,
+  #    evaluated with the statistics of the observed data in the historical
+  #    period, to the probabilities obtained from 5) (getCDFinv ). Equation 2 of
+  #   Cannon et al. (2015).
   DQM_LS <- getCDFinv(PDF_obs, Taot, mu_obs, std_obs, skew_obs, skewny_obs)
 
-  # 7) Reimpose the trend to the values obtained in 6). Equation 2 of Cannon
-  #    et al. (2015).
+  # 7) Reimpose the trend to the values obtained in 6). Equation 2 of Cannon et
+  #    al. (2015).
   if (var == 1) { # Precipitation
     DQM <- DQM_LS * (xbarmp / matrix(rep(xbarmh, ny_mod - ny_obs), ncol = ny_mod - ny_obs))
   } else { # Temperature
