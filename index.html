@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Climatic variables Quantile Mapping Bias Correction • climQMBC</title>
+<title>Climatic variables Quantile Mapping Bias Correction • climQMBC2</title>
 <!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="bootstrap-toc.css">
 <script src="bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
@@ -32,7 +32,7 @@
         <span class="icon-bar"></span>
       </button>
       <span class="navbar-brand">
-        <a class="navbar-link" href="index.html">climQMBC</a>
+        <a class="navbar-link" href="index.html">climQMBC2</a>
         <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.1.1</span>
       </span>
     </div>
@@ -40,10 +40,19 @@
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
 <li>
-  <a href="articles/climQMBC.html">Get started</a>
-</li>
-<li>
   <a href="reference/index.html">Reference</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Articles
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+<li>
+      <a href="articles/DQM.html">DQM</a>
+    </li>
+  </ul>
 </li>
 <li>
   <a href="news/index.html">Changelog</a>
@@ -64,76 +73,42 @@
 <div class="section level1">
 <div class="page-header"><h1 id="climqmbc">climQMBC<a class="anchor" aria-label="anchor" href="#climqmbc"></a>
 </h1></div>
-<p>A package with multiple bias correction methods for climatic variables, including the QM, DQM, QDM, UQM, and SDM methods, written in Python, MATLAB, and R.</p>
-<p>Authors: Sebastian Aedo Quililongo (1*), Cristian Chadwick (2), Fernando Gonzalez-Leiva (3), and Jorge Gironas (3)</p>
-<ol style="list-style-type: decimal">
-<li>Centro de Cambio Global UC, Pontificia Universidad Catolica de Chile, Santiago, Chile.<br>
-</li>
-<li>Faculty of Engineering and Sciences, Universidad Adolfo Ibanez, Santiago, Chile.<br>
-</li>
-<li>Department of Hydraulics and Environmental Engineering, Pontificia Universidad Catolica de Chile, Santiago, Chile.</li>
-</ol>
-<p>*Maintainer contact: <a href="mailto:slaedo@uc.cl" class="email">slaedo@uc.cl</a><br>
-Version: 0.1.1, updated Aug 2022</p>
+<!-- badges: start -->
+
 <div class="section level2">
-<h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
+<h2 id="quantile-mapping-methods">Quantile Mapping methods<a class="anchor" aria-label="anchor" href="#quantile-mapping-methods"></a>
 </h2>
-<p>Bias Correction is the process of eliminating GCM or RCM biases based on observed values. Several bias correction bethods have been developed to correct the bias of GCM or RCM simulations; however, based on the formulation of these methods, they preserve different changes of the modeled series and perform different under certain conditions.</p>
-<p>The climQMBC package makes available five different Quantile Mapping methods for bias correction of climatic variables. These are the Quantile Mapping (QM), Detrended Quantile Mapping (DQM), Quantile Delta Mapping (DQM), Unbiased Quantile Mapping (UQM), and Scaled Distribution Mapping (SDM) methods. The package also provides a <strong><em>report</em></strong> function to compare the performance or evaluate the tradeoffs between each method, based on the conservation of changes in the mean and standard deviation of the GMCs.</p>
-<p>The climQMBC package considers bias correction of monthly and annual series of variables whose changes are relative (precipitation) or absolute (temperature).</p>
-<p>Bias correction of modeled series (GCMs outputs) is performed at a single location based on the observed values. As a general approach, the QM methods looks for relationships between the modeled series and observed data and applies it to the modeled series to obtain an unbiased climate series in the historical and future periods. The climQMBC package applies these relations as a continuum, where for each year it considers a window with length equal to the number of years of the historical period and ends in the analyzed year to correct that specific year. This process is repeated for each year of the future period. Note that this continuum methodology does not apply for the standard QM method.</p>
-<p>For each period, the package selects the most appropiate probability ditribution function based in the Kolmogorov-Smirnov test. If the series frequency is monthly, a distribution function is assigned for each month independently. Distributions are fitted by the Method of Moments. The available distributions are: - Normal distribution - Log-normal distribution - Gamma 2 parameters distribution - Gamma 3 parameters distribution - Log-Gamma distribution - Exponential distribution</p>
-<p>For precipitation values, only strictly positive distributions are considered. For temperature values, strictly positive distributions are discarded if there are negative values in the analyzed period.</p>
-<p>This distribution adjustment does not apply for the SDM method as it considers the gamma distribution for precipitation and normal distribution for temperatures, fitted by the Maximum likelihood Estimates Method.</p>
-<p>The climQMBC package has the capacity to replace low precipitation values with random values. Considering a default threshold of 1 mm, values below this threshold are replaced with random values between 0 and 1/100. These parameters can be modified by the user and even the user can disable this capacity.</p>
-</div>
-<div class="section level2">
-<h2 id="getting-started">Getting started<a class="anchor" aria-label="anchor" href="#getting-started"></a>
-</h2>
-<div class="section level3">
-<h3 id="installation-or-importing">Installation or importing<a class="anchor" aria-label="anchor" href="#installation-or-importing"></a>
-</h3>
-<p>Within the <a href="https://github.com/saedoquililongo/climQMBC/tree/main/Python" class="external-link">Python</a>, <a href="https://github.com/saedoquililongo/climQMBC/tree/main/Matlab" class="external-link">Matlab</a>, and <a href="https://github.com/saedoquililongo/climQMBC/tree/main/R" class="external-link">R</a> directories you will find the installation and importing procedure for each programming language.</p>
-</div>
-<div class="section level3">
-<h3 id="quick-start">Quick start<a class="anchor" aria-label="anchor" href="#quick-start"></a>
-</h3>
-<p>Within the <a href="https://github.com/saedoquililongo/climQMBC/tree/main/Python" class="external-link">Python</a>, <a href="https://github.com/saedoquililongo/climQMBC/tree/main/Matlab" class="external-link">Matlab</a>, and <a href="https://github.com/saedoquililongo/climQMBC/tree/main/R" class="external-link">R</a> directories you will find scripts with examples of the capacities of the package and suggestions of its use.</p>
 <ul>
-<li>Python: <a href="https://github.com/saedoquililongo/climQMBC/blob/main/Python/climQMBC_tester_Python.py" class="external-link">climQMBC_tester_Python.py</a>
-</li>
-<li>Matlab: <a href="https://github.com/saedoquililongo/climQMBC/blob/main/Matlab/climQMBC_tester_Matlab.m" class="external-link">climQMBC_tester_Matlab.m</a>
-</li>
-<li>R: <a href="https://github.com/saedoquililongo/climQMBC/blob/main/R/climQMBC_tester_R.R" class="external-link">climQMBC_tester_R.R</a>
-</li>
+<li>Quantile Mapping (QM)</li>
+<li>Detrended Quantile Mapping (DQM)</li>
+<li>Quantile Delta Mapping (DQM)</li>
+<li>Unbiased Quantile Mapping (UQM)</li>
+<li>Scaled Distribution Mapping (SDM)</li>
 </ul>
-<p>Additionally, the <a href="https://github.com/saedoquililongo/climQMBC/blob/main/Example_notebook.ipynb" class="external-link">Example_notebook.ipynb</a> is a notebook showing the usage of the package in Python and examples of the results of the methods and functions implemented.</p>
-</div>
 </div>
 <div class="section level2">
 <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
-<div class="section level4">
-<h4 id="climqmbc-1">climQMBC:<a class="anchor" aria-label="anchor" href="#climqmbc-1"></a>
-</h4>
-<p><a href="https://agu2021fallmeeting-agu.ipostersessions.com/Default.aspx?s=52-1C-3B-41-27-7C-34-E2-DE-3F-55-24-7B-0C-34-48" class="external-link">Aedo, S., Chadwick, C., Gonz�lez-Leiva, F., and Giron�s, J. (2021). climQMBC a new package to Bias Correct Climatic Variables While Preserving raw GCM Changes in the Mean and Standard Deviation For R, Python and Matlab. American Geophysical Union fall meeting, 2021.</a></p>
-</div>
-<div class="section level4">
-<h4 id="qm-dqm-and-qdm">QM, DQM and QDM:<a class="anchor" aria-label="anchor" href="#qm-dqm-and-qdm"></a>
-</h4>
+<ul>
+<li>
+<p>climQMBC</p>
+<p><a href="https://github.com/saedoquililongo/climQMBC" class="external-link uri">https://github.com/saedoquililongo/climQMBC</a></p>
+<p><a href="https://agu2021fallmeeting-agu.ipostersessions.com/Default.aspx?s=52-1C-3B-41-27-7C-34-E2-DE-3F-55-24-7B-0C-34-48" class="external-link">Aedo, S., Chadwick, C., González-Leiva, F., and Gironás, J. (2021). climQMBC a new package to Bias Correct Climatic Variables While Preserving raw GCM Changes in the Mean and Standard Deviation For R, Python and Matlab. American Geophysical Union fall meeting, 2021.</a></p>
+</li>
+<li>
+<p>QM, DQM and QDM</p>
 <p><a href="https://doi.org/10.1175/JCLI-D-14-00754.1" class="external-link">Cannon, A. J., S. R. Sobie, and T. Q. Murdock. (2015). Bias correction of GCM precipitation by quantile mapping: How well do methods preserve changes in quantiles and extremes? J. Climate, 28(17), 6938-6959, https://doi.org/10.1175/JCLI-D-14-00754.1</a></p>
-</div>
-<div class="section level4">
-<h4 id="uqm">UQM:<a class="anchor" aria-label="anchor" href="#uqm"></a>
-</h4>
-<p>Chadwick, C., Giron�s, J., Gonz�lez-Leiva, F., and Aedo, S. (In revision). Bias-Correction to Preserve the Changes in Variability: The Unbiased Mapping of GCM Changes to Local Stations.</p>
-<p><a href="https://agu2021fallmeeting-agu.ipostersessions.com/default.aspx?s=48-67-54-07-35-60-D9-5B-8D-0C-9C-6C-1C-1A-92-EE" class="external-link">Chadwick, C., Giron�s, J., Gonz�lez-Leiva, F., and Aedo, S. (2021). Bias Correction and the Importance of Preserving the Changes in Variability: Unbiased Quantile Mapping (UQM) a Novel Bias Correction. American Geophysical Union fall meeting, 2021.</a></p>
-</div>
-<div class="section level4">
-<h4 id="sdm">SDM:<a class="anchor" aria-label="anchor" href="#sdm"></a>
-</h4>
+</li>
+<li>
+<p>UQM</p>
+<p>Chadwick, C., Gironás, J., González-Leiva, F., and Aedo, S. (In revision). Bias-Correction to Preserve the Changes in Variability: The Unbiased Mapping of GCM Changes to Local Stations.</p>
+<p><a href="https://agu2021fallmeeting-agu.ipostersessions.com/default.aspx?s=48-67-54-07-35-60-D9-5B-8D-0C-9C-6C-1C-1A-92-EE" class="external-link">Chadwick, C., Gironás, J., González-Leiva, F., and Aedo, S. (2021). Bias Correction and the Importance of Preserving the Changes in Variability: Unbiased Quantile Mapping (UQM) a Novel Bias Correction. American Geophysical Union fall meeting, 2021.</a></p>
+</li>
+<li>
+<p>SDM</p>
 <p><a href="https://doi.org/10.5194/hess-21-2649-2017" class="external-link">Switanek, B. M., Troch, P., Castro, L. C., Leuprecht, A., Chang, H. I., Mukherjee, R., and Demaria, M. C. E. (2017). Scaled distribution mapping: A bias correction method that preserves raw climate model projected changes. Hydrology &amp; Earth System Sciences, 21, 2649-2666, https://doi.org/10.5194/hess-21-2649-2017.</a></p>
-</div>
+</li>
+</ul>
 </div>
 </div>
   </div>
@@ -142,7 +117,8 @@ Version: 0.1.1, updated Aug 2022</p>
     <div class="license">
 <h2 data-toc-skip>License</h2>
 <ul class="list-unstyled">
-<li>What license is it under?</li>
+<li><a href="LICENSE.html">Full license</a></li>
+<li><small>GPL (&gt;= 3)</small></li>
 </ul>
 </div>
 
@@ -150,7 +126,7 @@ Version: 0.1.1, updated Aug 2022</p>
 <div class="citation">
 <h2 data-toc-skip>Citation</h2>
 <ul class="list-unstyled">
-<li><a href="authors.html#citation">Citing climQMBC</a></li>
+<li><a href="authors.html#citation">Citing climQMBC2</a></li>
 </ul>
 </div>
 
@@ -161,7 +137,16 @@ Version: 0.1.1, updated Aug 2022</p>
 </ul>
 </div>
 
-
+<div class="dev-status">
+<h2 data-toc-skip>Dev status</h2>
+<ul class="list-unstyled">
+<li><a href="https://github.com/rpkgs/climQMBC/actions" class="external-link"><img src="https://github.com/rpkgs/climQMBC/workflows/R-CMD-check/badge.svg" alt="R-CMD-check"></a></li>
+<li><a href="https://app.codecov.io/gh/rpkgs/climQMBC" class="external-link"><img src="https://codecov.io/gh/rpkgs/climQMBC/branch/master/graph/badge.svg" alt="codecov"></a></li>
+<li><a href="https://cran.r-project.org/package=climQMBC" class="external-link"><img src="http://www.r-pkg.org/badges/version/climQMBC" alt="CRAN"></a></li>
+<li><a href="https://cran.r-project.org/package=climQMBC" class="external-link"><img src="http://cranlogs.r-pkg.org/badges/grand-total/climQMBC" alt="total"></a></li>
+<li><a href="https://cran.r-project.org/package=climQMBC" class="external-link"><img src="http://cranlogs.r-pkg.org/badges/climQMBC" alt="monthly"></a></li>
+</ul>
+</div>
 
   </div>
 </div>
@@ -174,7 +159,7 @@ Version: 0.1.1, updated Aug 2022</p>
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer>

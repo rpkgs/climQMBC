@@ -1,7 +1,7 @@
 pandoc: 2.19.2
-pkgdown: 2.0.6
+pkgdown: 2.0.7
 pkgdown_sha: ~
 articles:
-  climQMBC: climQMBC.html
-last_built: 2022-11-12T12:31Z
+  DQM: DQM.html
+last_built: 2023-02-08T03:52Z
 
