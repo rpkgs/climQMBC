@@ -60,7 +60,8 @@
 #' `[12,1]` if the series consider monthly data and `[1,1]` if the series
 #' consider annual data.
 #'
-#' #### `nyear`
+#' #### `nyear`: length of year
+#' 
 #' @export
 formatQM <- function(obs, mod, var, frq = "M", pp_threshold = 1, pp_factor = 1e-2) {
   # 0) Check if annually or monthly data is specified.

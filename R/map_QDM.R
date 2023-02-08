@@ -26,20 +26,13 @@ map_QDM <- function(obs, mod, var, frq = "M", pp_threshold = 1, pp_factor = 1e-2
   mod_series <- l$mod$data
   nfrq <- dim(mod_series)[1]
 
-  mu_obs     <- l$obs$coef$mu
-  std_obs    <- l$obs$coef$sigma
-  skew_obs   <- l$obs$coef$skew
-  skewny_obs <- l$obs$coef$skewy
-
-  mu_mod     <- l$mod$coef$mu
-  std_mod    <- l$mod$coef$sigma
-  skew_mod   <- l$mod$coef$skew
-  skewny_mod <- l$mod$coef$skewy
+  coef_obs <- l$obs$coef
+  coef_mod <- l$mod$coef
 
   # 2) Assign a probability distribution function to each month for the
   #    observed and modeled data in the historical period.
-  PDF_obs <- getDist(obs_series, mu_obs, std_obs, skew_obs, skewny_obs, var)
-  PDF_mod <- getDist(mod_series[, 1:ny_obs, drop=FALSE], mu_mod, std_mod, skew_mod, skewny_mod, var)
+  PDF_obs <- getDist(obs_series, var, coef_obs)
+  PDF_mod <- getDist(mod_series[, 1:ny_obs, drop=FALSE], var, coef_mod)
 
   # 3) For each projected period:
   PDF_win <- matrix(0, nfrq, ny_exceed)
@@ -57,22 +50,25 @@ map_QDM <- function(obs, mod, var, frq = "M", pp_threshold = 1, pp_factor = 1e-2
     Ln_win[!is.finite(Ln_win)] <- log(0.01)
     skewy <- apply(Ln_win, 1, skewness2) # Log-Skewness
 
+    coef <- list(mu = mux, sigma = sigmax, skew = skewx, skewy = skewy)
+    
     # a) Assign a probability distribution function to each month.
-    PDF_win[, j] <- getDist(win_series, mux, sigmax, skewx, skewy, var)
+    PDF_win[, j] <- getDist(win_series, var, coef)
 
     # b) Apply the CDF of the projected period, evaluated with the statistics of
     # this period, to the last data of the period (getCDF). Eq. 3 of Cannon et al. (2015).
-    Taot[, j] <- getCDF(PDF_win[, j], matrix(mod_series[, ny_obs + j]), mux, sigmax, skewx, skewy)
+    
+    Taot[, j] <- getCDF(PDF_win[, j], matrix(mod_series[, ny_obs + j]), coef)
   }
 
   # 4) Apply the inverse CDF:
   # a) Of the observed data, evaluated with the statistics of the observed data
   #    in the historical period, to the probabilities obtained from 3b). Eq. 5 of Cannon et al. (2015).
-  inv_obs <- getCDFinv(PDF_obs, Taot, mu_obs, std_obs, skew_obs, skewny_obs)
+  inv_obs <- getCDFinv(PDF_obs, Taot, coef_obs)
 
   # b) Of the modeled data, evaluated with the statistics of the observed data
   #    in the historical period, to the probabilities obtained from 3b). Eq.s 4 of Cannon et al. (2015).
-  inv_mod <- getCDFinv(PDF_mod, Taot, mu_mod, std_mod, skew_mod, skewny_mod)
+  inv_mod <- getCDFinv(PDF_mod, Taot, coef_mod)
 
   # 5) Get the delta factor or relative change and apply it to the value
   #    obtained in 4b). Eq. 4 and 6 of Cannon et al. (2015).

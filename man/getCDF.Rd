@@ -4,7 +4,7 @@
 \alias{getCDF}
 \title{Get probability of a set of values}
 \usage{
-getCDF(PDF, series, mu, sigma, skew, skewy)
+getCDF(PDF, series, coef)
 }
 \arguments{
 \item{PDF}{A column vector with an ID for the resulting distribution from the
@@ -16,6 +16,20 @@ distribution listed in the description of this function.}
 precipitation). If the series consider monthly data, it will have 12 rows and
 each row will represent a month. For annual data the series will have only
 one row.}
+
+\item{coef}{A named list, with the elements of:
+\itemize{
+\item \code{mu}: A column vector of mean values of the series. \verb{[12,1]} if the series
+consider monthly data and \verb{[1,1]} if the series consider annual data.
+\item \code{sigma}: A column vector of standard deviation of the series. \verb{[12,1]} if
+the series consider monthly data and \verb{[1,1]} if the series consider annual
+data.
+\item \code{skew}: A column vector of skewness of the series. \verb{[12,1]} if the series
+consider monthly data and \verb{[1,1]} if the series consider annual data.
+\item \code{skewy}: A column vector of skewness of the logarithm of the series.
+\verb{[12,1]} if the series consider monthly data and \verb{[1,1]} if the series
+consider annual data.
+}}
 }
 \value{
 \code{Taot}: A column vector with the non-exceedance probability for each
@@ -33,8 +47,7 @@ function assigned by the Kolmogorov-Smirnov (KS) test in the \link{getDist}.
 \item Log-Normal distribution;
 \item Gamma 2 parameters distribution;
 \item Gamma 3 parameters distribution (Pearson 3 parameters distribution);
-\item Log-Gamma 3 parameters distribution (Log-Pearson 3 parameters
-distribution);
+\item Log-Gamma 3 parameters distribution (Log-Pearson 3 parameters distribution);
 \item Gumbel distribution;
 \item Exponential distribution
 }
@@ -48,18 +61,20 @@ discarded).
 
 \examples{
 # temperature data
-input <- climMOD
+var = 0
+input <- clim_Temp
+
 l <- with(input, formatQM(obs, mod, var))
 print(str(l))
 
 l_obs <- l$obs
 l_mod <- l$mod
 
-DIST_mod <- with(l_mod, getDist(data, coef, var))
+DIST_mod <- with(l_mod, getDist(data, var, coef))
 
 cdf_mod <- with(l_mod, getCDF(DIST_mod, data, coef))
 
-DIST_obs <- with(l_obs, getDist(data, coef, var))
+DIST_obs <- with(l_obs, getDist(data, var, coef))
 QM_series <- getCDFinv(DIST_obs, cdf_mod, l_obs$coef)
 
 r <- list(dist = DIST_mod, cdf = cdf_mod)

@@ -4,7 +4,7 @@
 \alias{getDist}
 \title{Get probability distribution function}
 \usage{
-getDist(series, mu, sigma, skew, skewy, var)
+getDist(series, var, coef)
 }
 \arguments{
 \item{series}{A matrix of monthly or annual data (temperature or
@@ -66,8 +66,7 @@ values.
 \item Log-Normal distribution;
 \item Gamma 2 parameters distribution;
 \item Gamma 3 parameters distribution (Pearson 3 parameters distribution);
-\item Log-Gamma 3 parameters distribution (Log-Pearson 3 parameters
-distribution);
+\item Log-Gamma 3 parameters distribution (Log-Pearson 3 parameters distribution);
 \item Gumbel distribution;
 \item Exponential distribution
 }
@@ -81,18 +80,20 @@ discarded).
 
 \examples{
 # temperature data
-input <- climMOD
+var = 0
+input <- clim_Temp
+
 l <- with(input, formatQM(obs, mod, var))
 print(str(l))
 
 l_obs <- l$obs
 l_mod <- l$mod
 
-DIST_mod <- with(l_mod, getDist(data, coef, var))
+DIST_mod <- with(l_mod, getDist(data, var, coef))
 
 cdf_mod <- with(l_mod, getCDF(DIST_mod, data, coef))
 
-DIST_obs <- with(l_obs, getDist(data, coef, var))
+DIST_obs <- with(l_obs, getDist(data, var, coef))
 QM_series <- getCDFinv(DIST_obs, cdf_mod, l_obs$coef)
 
 r <- list(dist = DIST_mod, cdf = cdf_mod)

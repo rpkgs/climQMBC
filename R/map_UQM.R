@@ -30,6 +30,9 @@ map_UQM <- function(obs, mod, var, frq = "M", pp_threshold = 1, pp_factor = 1e-2
   mod_series <- l$mod$data
   nfrq <- dim(mod_series)[1]
   
+  coef_obs <- l$obs$coef
+  coef_mod <- l$mod$coef
+
   mu_obs     <- l$obs$coef$mu
   std_obs    <- l$obs$coef$sigma
   skew_obs   <- l$obs$coef$skew
@@ -41,7 +44,7 @@ map_UQM <- function(obs, mod, var, frq = "M", pp_threshold = 1, pp_factor = 1e-2
   skewny_mod <- l$mod$coef$skewy
 
   
-  PDF_obs <- getDist(obs_series, mu_obs, std_obs, skew_obs, skewny_obs, var)
+  PDF_obs <- getDist(obs_series, var, coef_obs)
 
   # 3) For each projected period, get the delta factor (delta) and time
   #    dependent (aster) statistics (mean, standard deviation, skewness, and
@@ -123,16 +126,18 @@ map_UQM <- function(obs, mod, var, frq = "M", pp_threshold = 1, pp_factor = 1e-2
     Ln_win[!is.finite(Ln_win)] <- log(0.01)
     skewy <- apply(Ln_win, 1, e1071::skewness, na.rm = TRUE, type = 2) # Log-Skewness
 
+    coef <- list(mu = mux, sigma = sigmax, skew = skewx, skewy = skewy)
+
     # a) Assign a probability distribution function to each month. If
     #    annual frequency is specified, this is applied to the complete
     #    period (getDist).
-    PDF_win[, j] <- getDist(win_series, mux, sigmax, skewx, skewy, var)
+    PDF_win[, j] <- getDist(win_series, var, coef)
 
     # b) Apply the CDF of the projected
     #    period, evaluated with the statistics of this period, to the last
     #    data of the period (getCDF).
     #    Eq. X of Chadwick et al. (2021).
-    Taot[, j] <- getCDF(PDF_win[, j], matrix(mod_series[, ny_obs + j]), mux, sigmax, skewx, skewy)
+    Taot[, j] <- getCDF(PDF_win[, j], matrix(mod_series[, ny_obs + j]), coef)
   }
 
   # 5) Apply the inverse CDF of the observed
@@ -140,7 +145,13 @@ map_UQM <- function(obs, mod, var, frq = "M", pp_threshold = 1, pp_factor = 1e-2
   #    obtained in 4b) (getCDFinv). Eq.
   #    X of Chadwick et al. (2021).
   for (yr in 1:dim(Taot)[2]) {
-    UQM[, yr] <- getCDFinv(PDF_obs, matrix(Taot[, yr]), matrix(muAster[, yr]), matrix(sigmaAster[, yr]), matrix(skwAster[, yr]), matrix(LskwAster[, yr]))
+    coef <- list(
+      mu    = matrix(muAster[, yr]),
+      sigma = matrix(sigmaAster[, yr]), 
+      skew  = matrix(skwAster[, yr]),
+      skewy = matrix(LskwAster[, yr])
+    )
+    UQM[, yr] <- getCDFinv(PDF_obs, matrix(Taot[, yr]), coef)
   }
 
   UQM <- matrix(UQM)

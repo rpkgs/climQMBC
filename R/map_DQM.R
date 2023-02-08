@@ -12,21 +12,14 @@ map_DQM <- function(obs, mod, var, frq = "M", pp_threshold = 1, pp_factor = 1e-2
   mod_series <- l$mod$data
   nfrq <- dim(mod_series)[1]
   
-  mu_obs     <- l$obs$coef$mu
-  std_obs    <- l$obs$coef$sigma
-  skew_obs   <- l$obs$coef$skew
-  skewny_obs <- l$obs$coef$skewy
-
-  mu_mod     <- l$mod$coef$mu
-  std_mod    <- l$mod$coef$sigma
-  skew_mod   <- l$mod$coef$skew
-  skewny_mod <- l$mod$coef$skewy
+  coef_obs <- l$obs$coef
+  coef_mod <- l$mod$coef
 
   ## 2) Assign a probability distribution function to each month for the observed
   #    and modeled data in the historical period. If annual frequency is
   #    specified, this is applied to the complete historical period (getDist).
-  PDF_obs <- getDist(obs_series, mu_obs, std_obs, skew_obs, skewny_obs, var)
-  PDF_mod <- getDist(mod_series[, 1:ny_obs, drop=FALSE], mu_mod, std_mod, skew_mod, skewny_mod, var)
+  PDF_obs <- getDist(obs_series, var, coef_obs)
+  PDF_mod <- getDist(mod_series[, 1:ny_obs, drop=FALSE], var, coef_mod)
 
   ## 3) Extract the long-term trend from the modeled data: 
 
@@ -60,12 +53,12 @@ map_DQM <- function(obs, mod, var, frq = "M", pp_threshold = 1, pp_factor = 1e-2
 
   # 5) Apply the CDF of the modeled data, evaluated with the statistics of the
   #    modeled period, to the future modeled data (getCDF). Eq.2, Cannon 2015.
-  Taot <- getCDF(PDF_mod, LS, mu_mod, std_mod, skew_mod, skewny_mod)
+  Taot <- getCDF(PDF_mod, LS, coef_mod)
 
   # 6) Apply the inverse CDF of the observed data, evaluated with the statistics
   #    of the observed data in the historical period, to the probabilities
   #    obtained from 5) (getCDFinv). Eq.2, Cannon 2015.
-  DQM_LS <- getCDFinv(PDF_obs, Taot, mu_obs, std_obs, skew_obs, skewny_obs)
+  DQM_LS <- getCDFinv(PDF_obs, Taot, coef_obs)
 
   # 7) Reimpose the trend to the values obtained in 6). Eq.2, Cannon 2015.
   ## ReverseScale

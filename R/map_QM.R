@@ -29,33 +29,27 @@ map_QM <- function(obs, mod, var, frq = "M", pp_threshold = 1, pp_factor = 1e-2)
   obs_series <- l$obs$data
   mod_series <- l$mod$data
 
-  mu_obs     <- l$obs$coef$mu
-  std_obs    <- l$obs$coef$sigma
-  skew_obs   <- l$obs$coef$skew
-  skewny_obs <- l$obs$coef$skewy
+  coef_obs <- l$obs$coef
+  coef_mod <- l$mod$coef
 
-  mu_mod     <- l$mod$coef$mu
-  std_mod    <- l$mod$coef$sigma
-  skew_mod   <- l$mod$coef$skew
-  skewny_mod <- l$mod$coef$skewy
   # 2) Assign a probability distribution function to each month for the
   #    observed and modeled data in the historical period. If annual
   #    frequency is specified, this is applied to the complete historical
   #    period (getDist).
-  PDF_obs <- getDist(obs_series, mu_obs, std_obs, skew_obs, skewny_obs, var)
-  PDF_mod <- getDist(mod_series[, 1:ny_obs, drop = FALSE], mu_mod, std_mod, skew_mod, skewny_mod, var)
+  PDF_obs <- getDist(obs_series, var, coef_obs)
+  PDF_mod <- getDist(mod_series[, 1:ny_obs, drop = FALSE], var, coef_mod)
 
   # 3) Apply the CDF of the modeled data,
   #    evaluated with the statistics of the modeled data in the historical
   #    period, to the modeled data (getCDF).
   #    Eq. 1 of Cannon et al. (2015).
-  Taot <- getCDF(PDF_mod, mod_series, mu_mod, std_mod, skew_mod, skewny_mod)
+  Taot <- getCDF(PDF_mod, mod_series, coef_mod)
 
   # 4) Apply the inverse CDF of the observed
   #    data, evaluated with the statistics of the observed data in the
   #    historical period, to the probabilities obtained from 3) (getCDFinv).
   #    Eq. 1 of Cannon et al. (2015).
-  QM_series <- getCDFinv(PDF_obs, Taot, mu_obs, std_obs, skew_obs, skewny_obs)
+  QM_series <- getCDFinv(PDF_obs, Taot, coef_obs)
   QM_series <- matrix(QM_series)
   if (var == 1) {
     QM_series[QM_series < pp_threshold] <- 0
