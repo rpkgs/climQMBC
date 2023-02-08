@@ -60,7 +60,9 @@ consider annual data.
 }
 }
 
-\subsection{\code{nyear}: length of year}{
+\subsection{\code{nyear}}{
+
+length of year
 }
 }
 \description{
