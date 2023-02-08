@@ -44,23 +44,23 @@
 #' @param y_init (Optional) First year of the observed and modeled series
 #' (integer). Default: y_init = 0
 #' 
-#' @param y_wind (Optional) A list of integers with the year of the center of
-#' the projected periods to be reported. Default: y_wind = `[int(y_obs+y_obs/2),
-#' int(y_mod-y_obs/2)]` This value sets a first projected period just after the
-#' end of historical period, and a second projected period just before the end
-#' of the modeled series.
+#' @param y_wind (Optional) Default: y_wind = `[int(y_obs+y_obs/2),
+#' int(y_mod-y_obs/2)]`. A list of integers with the year of the center of the
+#' projected periods to be reported. This value sets a first projected period
+#' just after the end of historical period, and a second projected period just
+#' before the end of the modeled series.
 #'
 #' @return A list with the five methods implemented in the climQMBC ppackage:
 #' QM, DQM, QDM, UQM, and SDM.
-#'
+#' 
 #' @examples 
-#' report(obs, mod, var) 
-#' report(obs, mod, var, fun=c('QDM','UQM','SDM'),y_init = 1979,y_wind = c(2035,2060,2080))
+#' # report(obs, mod, var, fun=c('QDM','UQM','SDM'),y_init = 1979,y_wind = c(2035,2060,2080))
 #' 
 #' @importFrom pracma disp num2str
-#' 
 #' @export
-report <- function(obs,mod,var,fun,y_init,y_wind){
+report <- function(obs, mod, var,
+  fun = c('QM','DQM','QDM','UQM','SDM'),
+  y_init = 0, y_wind){
 
   # 0) Get the number of observed and modeled years
   n_obs <- length(obs)
@@ -70,14 +70,9 @@ report <- function(obs,mod,var,fun,y_init,y_wind){
   y_mod = n_mod/12
 
   # 1) Set non-declared arguments
-  if(missing(fun)) {
-    fun <- c('QM','DQM','QDM','UQM','SDM')
-  }
-  if(missing(y_init)) {
-    y_init <- 0
-  }
+  
   if(missing(y_wind)) {
-    y_wind <- c(floor(y_obs+y_obs/2),floor(y_mod-y_obs/2))
+    y_wind <- c(floor(y_obs + y_obs/2), floor(y_mod-y_obs/2))
     w_label <- c('First period','Last period')
     rep_head <- c('Variation              Hist.        First        Last')
   } else {

@@ -2,7 +2,8 @@
 devtools::load_all(".")
 library(climQMBC2)
 
-input = climMOD
+var = 0
+input = clim_Temp
 e = list2env(input, .GlobalEnv)
 
 pp_threshold = 1

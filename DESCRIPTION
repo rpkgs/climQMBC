@@ -11,12 +11,12 @@ Imports:
     e1071,
     fitdistrplus,
     magrittr,
-    pracma, 
-    MBC
+    pracma
 Suggests: 
     glue, data.table,
     knitr,
-    rmarkdown
+    rmarkdown, 
+    MBC
 VignetteBuilder: knitr
 Depends: 
     R (>= 2.10)

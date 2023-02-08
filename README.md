@@ -1,5 +1,14 @@
 # climQMBC
 
+<!-- badges: start -->
+
+[![R-CMD-check](https://github.com/rpkgs/rtrend/workflows/R-CMD-check/badge.svg)](https://github.com/rpkgs/rtrend/actions)
+[![codecov](https://codecov.io/gh/rpkgs/rtrend/branch/master/graph/badge.svg)](https://app.codecov.io/gh/rpkgs/rtrend)
+[![CRAN](http://www.r-pkg.org/badges/version/rtrend)](https://cran.r-project.org/package=rtrend)
+[![total](http://cranlogs.r-pkg.org/badges/grand-total/rtrend)](https://cran.r-project.org/package=rtrend)
+[![monthly](http://cranlogs.r-pkg.org/badges/rtrend)](https://cran.r-project.org/package=rtrend)
+<!-- badges: end -->
+
 A package with multiple bias correction methods for climatic variables,
 including the QM, DQM, QDM, UQM, and SDM methods, written in R.
 

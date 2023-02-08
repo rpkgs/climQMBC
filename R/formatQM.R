@@ -21,9 +21,11 @@
 #' @param var A flag that identifies if data are temperature or precipitation.
 #' This flag tells the getDist function if it has to discard distribution
 #' functions that allow negative numbers, and if the terms in the correction
-#' equations are multiplied/divided or added/subtracted. Temperature: `var = 0`;
-#' Precipitation: `var = 1`
-#'
+#' equations are multiplied/divided or added/subtracted. 
+#' 
+#' - `Temperature`  : `var = 0`;
+#' - `Precipitation`: `var = 1`.
+#' 
 #' @param frq A string specifying if the input is annual or monthly data. If not
 #' specified, it is set monthly as default. Monthly: `frq = 'M'`; Annual: `frq =
 #' 'A'`
